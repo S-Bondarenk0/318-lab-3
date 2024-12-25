@@ -1,19 +1,18 @@
 #include <iostream>
 #include <cmath>
 
-// If28.
+// Функція перевірки високосного року
 int checkLeapYear() {
     int year;
-    std::cout << "Перевірка високосного року\n";
+    std::cout << "\nПеревірка високосного року\n";
     std::cout << "Введіть номер року: ";
     std::cin >> year;
 
     if (year <= 0) {
-        std::cout << "Рік має бути додатнім числом.\n";
+        std::cerr << "Рік має бути додатнім числом.\n";
         return 1;
     }
 
-    // Перевірка на високосний рік
     if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
         std::cout << "Рік " << year << " є високосним і має 366 днів.\n";
     } else {
@@ -23,44 +22,58 @@ int checkLeapYear() {
     return 0;
 }
 
-// variant 10: Розрахунок параметрів коричневої області
+// Функція перевірки точки в коричневій області для довільної чверті
 bool isPointInBrownArea(double x, double y, double a) {
     double r = a / 2.0;  // Радіус кола
-    // Перевірка належності точці сектора кола
-    bool inSector = (x >= 0 && y >= 0 && (x * x + y * y <= r * r));
-    // Перевірка належності точці трикутника (віднімемо цю область)
-    bool inTriangle = (x >= 0 && y >= 0 && y <= -x + r);
 
-    // Точка належить коричневій області, якщо в секторі, але не в трикутнику
-    return inSector && !inTriangle;
+    // Перевірка для першої чверті
+    bool inSector1 = (x >= 0 && y >= 0 && (x * x + y * y <= r * r));
+    bool inTriangle1 = (x >= 0 && y >= 0 && y <= -x + r);
+
+    // Перевірка для другої чверті
+    bool inSector2 = (x <= 0 && y >= 0 && (x * x + y * y <= r * r));
+    bool inTriangle2 = (x <= 0 && y >= 0 && y <= x + r);
+
+    // Перевірка для третьої чверті
+    bool inSector3 = (x <= 0 && y <= 0 && (x * x + y * y <= r * r));
+    bool inTriangle3 = (x <= 0 && y <= 0 && y >= -x - r);
+
+    // Перевірка для четвертої чверті
+    bool inSector4 = (x >= 0 && y <= 0 && (x * x + y * y <= r * r));
+    bool inTriangle4 = (x >= 0 && y <= 0 && y >= x - r);
+
+    // Перевірка належності точці коричневій області для кожної чверті
+    return (inSector1 && !inTriangle1) || (inSector2 && !inTriangle2) ||
+           (inSector3 && !inTriangle3) || (inSector4 && !inTriangle4);
 }
 
+// Функція обчислення параметрів коричневої області
 void calculateBrownArea() {
-    std::cout << "\n// variant 10: Розрахунок параметрів коричневої області\n";
+    std::cout << "\nРозрахунок параметрів коричневої області\n";
 
     double a;
     std::cout << "Введіть сторону квадрата a: ";
     std::cin >> a;
 
     if (a <= 0) {
-        std::cout << "Сторона квадрата має бути додатнім числом.\n";
+        std::cerr << "Сторона квадрата має бути додатнім числом.\n";
         return;
     }
 
     double r = a / 2.0;
 
-    // Площа коричневої області
-    double sector_area = (M_PI * r * r) / 4.0;
-    double triangle_area = (a * a) / 4.0;
-    double brown_area = sector_area - triangle_area;
+    // Розрахунок площі
+    double sectorArea = (M_PI * r * r) / 4.0;  // Площа сектора
+    double triangleArea = (a * a) / 4.0;      // Площа трикутника
+    double brownArea = sectorArea - triangleArea;
 
-    // Периметр коричневої області
-    double arc_length = (M_PI * r) / 2.0;  // Довжина дуги сектора (половина чверті кола)
-    double brown_perimeter = arc_length + r + a / 2.0;  // Дуга + радіус + гіпотенуза трикутника
+    // Розрахунок периметра
+    double arcLength = (M_PI * r) / 2.0;      // Довжина дуги сектора
+    double brownPerimeter = arcLength + 2 * r; // Дуга + 2 радіуси
 
     // Вивід площі та периметра
-    std::cout << "Площа коричневої області: " << brown_area << " квадратних одиниць.\n";
-    std::cout << "Периметр коричневої області: " << brown_perimeter << " одиниць.\n";
+    std::cout << "Площа коричневої області: " << brownArea << " квадратних одиниць.\n";
+    std::cout << "Периметр коричневої області: " << brownPerimeter << " одиниць.\n";
 
     // Перевірка точки
     double x, y;
@@ -75,9 +88,24 @@ void calculateBrownArea() {
 }
 
 int main() {
-    // Виконання задач
-    if (checkLeapYear() == 0) {
-        calculateBrownArea();
+    // Меню для виконання задач
+    int choice;
+    std::cout << "Оберіть завдання:\n";
+    std::cout << "1 - Перевірка високосного року\n";
+    std::cout << "2 - Розрахунок параметрів коричневої області\n";
+    std::cout << "Ваш вибір: ";
+    std::cin >> choice;
+
+    switch (choice) {
+        case 1:
+            checkLeapYear();
+            break;
+        case 2:
+            calculateBrownArea();
+            break;
+        default:
+            std::cerr << "Неправильний вибір. Завершення програми.\n";
     }
+
     return 0;
 }
